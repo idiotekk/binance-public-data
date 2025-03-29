@@ -1,8 +1,51 @@
-*.zip
-!/updates/*.zip
-.DS_Store
+# code
+code-*
+
+# Bazel build output directories
+/bazel-*
+
+# Python build output directories
+/bazel-out/
+/bazel-bin/
+
+# IDE specific files
 .idea/
-*/.DS_Store
-*/.idea/
-*/__pycache__/
-python/data/
+*.iml
+*.ipr
+*.iws
+*.bak
+*.log
+*.swp
+
+# Compiled Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Miscellaneous
+.DS_Store
+.bazelci/
+tmp/
+test.log
+_test*
+.ipynb_checkpoints
+
+.private
+.venv
+.python-version
+venv
+log
+test
+
+# for specific venvs (e.g. venv-kwenta)
+venv-*
+
+# notebooks are allowed but limited (because they are likely messy)
+# so you have to explicitly git add them
+*.ipynb
+
+# csv could be often large, so you need to explicitly git add them
+*.csv
+
+# gold files need to be explicitly git added
+gold/*

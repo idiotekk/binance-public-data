@@ -1,5 +1,6 @@
 import os, sys, re, shutil
 import json
+import requests
 from pathlib import Path
 from datetime import *
 import urllib.request
@@ -17,13 +18,27 @@ def get_destination_dir(file_url, folder=None):
 def get_download_url(file_url):
   return "{}{}".format(BASE_URL, file_url)
 
+def requests_get(*a, **kw):
+  with requests.Session() as s:
+    # s.keep_alive = False
+    s.headers['Connection'] = 'close'
+    proxy = os.environ["NORD_VPN_SOCKS5_PROXY"]
+    username = os.environ["NORD_VPN_SOCKS5_USERNAME"]
+    password = os.environ["NORD_VPN_SOCKS5_PASSWORD"]
+    prox = {'https':f'socks5://{username}:{password}@{proxy}'}
+    r = s.get(*a, **kw, proxies=prox)
+    return json.dumps(r.json())
+
 def get_all_symbols(type):
   if type == 'um':
-    response = urllib.request.urlopen("https://fapi.binance.com/fapi/v1/exchangeInfo").read()
+    #response = urllib.request.urlopen("https://fapi.binance.com/fapi/v1/exchangeInfo").read()
+    response = requests_get("https://fapi.binance.com/fapi/v1/exchangeInfo")
   elif type == 'cm':
-    response = urllib.request.urlopen("https://dapi.binance.com/dapi/v1/exchangeInfo").read()
+    #response = urllib.request.urlopen("https://dapi.binance.com/dapi/v1/exchangeInfo").read()
+    response = requests_get("https://dapi.binance.com/dapi/v1/exchangeInfo")
   else:
-    response = urllib.request.urlopen("https://api.binance.com/api/v3/exchangeInfo").read()
+    #response = urllib.request.urlopen("https://api.binance.com/api/v3/exchangeInfo").read()
+    response = requests_get("https://api.binance.com/api/v3/exchangeInfo")
   return list(map(lambda symbol: symbol['symbol'], json.loads(response)['symbols']))
 
 def download_file(base_path, file_name, date_range=None, folder=None):
